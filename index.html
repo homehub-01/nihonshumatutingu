@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:,">
+<title>日本酒マッチング</title>
+<style>
+:root{
+  --bg:#f6f2e9; --bg2:#efe9db; --card:#fffdf8; --ink:#23283b; --muted:#5c6070;
+  --line:#ddd5c2; --indigo:#2e3d6e; --indigo2:#3d5296; --indigo-soft:#e6e9f4;
+  --accent:#b7791f; --accent-soft:#f3e8cf; --good:#2f7d5b; --warn:#a34a2e;
+  --chip:#eef0f6; --shadow:0 10px 30px rgba(35,40,59,.10);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#14161f; --bg2:#191c28; --card:#1f2333; --ink:#eef0f6; --muted:#a7adc0;
+    --line:#343a52; --indigo:#8fa3e8; --indigo2:#a9bcf2; --indigo-soft:#2a3153;
+    --accent:#e0aa4e; --accent-soft:#3a3220; --good:#6fce9f; --warn:#e08a6d;
+    --chip:#262c44; --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{margin:0;background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);color:var(--ink);
+  font-family:"Hiragino Mincho ProN","Hiragino Sans","Yu Mincho","Yu Gothic",serif,sans-serif;
+  line-height:1.75; font-size:16px;}
+button{font-family:inherit; min-height:48px; cursor:pointer;}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 64px;}
+.hero{padding:28px 4px 8px;text-align:left;}
+.kicker{font-family:"Hiragino Sans","Yu Gothic",sans-serif;font-size:12px;letter-spacing:.18em;color:var(--indigo);font-weight:700;}
+h1{font-size:34px;line-height:1.25;margin:10px 0 12px;font-weight:800;letter-spacing:.02em;}
+.lead{color:var(--muted);font-size:16px;margin:0 0 18px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin:16px 0;}
+.card h2{font-size:20px;margin:0 0 10px;line-height:1.4;}
+.card h3{font-size:16px;margin:18px 0 8px;}
+.small{font-size:13px;color:var(--muted);}
+.pillrow{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;}
+.pill{font-family:"Hiragino Sans","Yu Gothic",sans-serif;font-size:12.5px;background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:6px 12px;color:var(--ink);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;border:1px solid var(--indigo);
+  background:var(--indigo);color:#fff;padding:12px 26px;font-size:16px;font-weight:700;width:100%;}
+.btn.secondary{background:transparent;color:var(--indigo);}
+@media (prefers-color-scheme: dark){ .btn{color:#14161f;} .btn.secondary{color:var(--indigo);} }
+.progresswrap{margin:18px 0 6px;}
+.progressmeta{display:flex;justify-content:space-between;font-family:"Hiragino Sans",sans-serif;font-size:12.5px;color:var(--muted);}
+.progress{height:8px;background:var(--chip);border-radius:99px;overflow:hidden;border:1px solid var(--line);}
+.progress > div{height:100%;background:var(--indigo2);width:0%;transition:width .35s ease;}
+.qtext{font-size:21px;font-weight:800;line-height:1.5;margin:14px 0 6px;}
+.qsub{color:var(--muted);font-size:14px;margin:0 0 16px;}
+.opts{display:grid;gap:10px;}
+.opt{display:block;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:14px;
+  padding:14px 16px;font-size:16px;color:var(--ink);line-height:1.5;transition:border-color .15s, background .15s;}
+.opt .sub{display:block;font-size:13px;color:var(--muted);margin-top:2px;}
+.opt.selected{border-color:var(--indigo);background:var(--indigo-soft);}
+@media (hover:hover) and (pointer:fine){
+  .opt:hover{border-color:var(--indigo2);background:var(--indigo-soft);}
+  .btn:hover{opacity:.92;}
+}
+.navrow{display:flex;gap:10px;margin-top:16px;}
+.navrow .btn{flex:1;}
+.ghostbtn{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:10px 18px;font-size:14px;}
+.scorebig{font-size:52px;font-weight:800;color:var(--indigo);line-height:1;}
+.typename{font-size:22px;font-weight:800;margin:6px 0;}
+.grid2{display:grid;grid-template-columns:1fr;gap:16px;}
+@media(min-width:640px){ .grid2{grid-template-columns:1fr 1fr;} h1{font-size:40px;} }
+.bar-row{display:grid;grid-template-columns:118px 1fr 30px;gap:10px;align-items:center;font-family:"Hiragino Sans",sans-serif;font-size:13px;margin:7px 0;}
+.bar{height:9px;background:var(--chip);border-radius:99px;overflow:hidden;border:1px solid var(--line);}
+.bar>div{height:100%;background:var(--indigo2);}
+.tag{font-family:"Hiragino Sans",sans-serif;font-size:11.5px;border-radius:999px;padding:3px 9px;background:var(--accent-soft);color:var(--ink);border:1px solid var(--line);display:inline-block;margin:2px 3px 2px 0;}
+.tag.hard{background:#f6ddd2;}
+.tag.easy{background:#dff0e6;}
+.notebox{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0;font-size:14.5px;}
+.notebox b{color:var(--indigo);}
+.mini{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--card);}
+.mini h4{margin:0 0 4px;font-size:16px;}
+.hidden{display:none !important;}
+.center{text-align:center;}
+.radarwrap{display:flex;justify-content:center;}
+footer{color:var(--muted);font-size:12.5px;text-align:center;margin-top:28px;font-family:"Hiragino Sans",sans-serif;}
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; scroll-behavior:auto !important;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- START -->
+  <section id="screen-start">
+    <div class="hero">
+      <div class="kicker">SAKE MATCHING ・ 日本酒マッチング</div>
+      <h1>18の質問で見つける、<br>あなたに合う日本酒</h1>
+      <p class="lead">むずかしい言葉は使いません。「メロンみたいな香りが好き」「ごはんと一緒に飲みたい」——そんな感覚で答えるだけで、あなたの味の好みを10項目で読み取り、実在の48本の中からぴったりの一本を選びます。</p>
+      <div class="pillrow">
+        <span class="pill">全18問・タップで選ぶだけ</span>
+        <span class="pill">答えで質問が変わる分岐つき</span>
+        <span class="pill">実在の銘柄48本と照合</span>
+        <span class="pill">価格はすべて目安（720ml）</span>
+      </div>
+      <button class="btn" id="btn-start" type="button">診断をはじめる</button>
+      <p class="small" style="margin-top:12px;">所要時間は3分ほど。途中で「もどる」もできます。十四代のような手に入りにくい銘柄が出たときは、そのことを正直にお伝えします。</p>
+    </div>
+    <div class="card">
+      <h2>こんなことが分かります</h2>
+      <p style="margin:0;">あなたの「味の好みマップ」（甘さ・香りの華やかさ・果物っぽさ・旨みなど10項目）をグラフで表示し、本命の一本には「香り／口当たり／後味」の感想、おすすめの飲み方（よく冷やして・常温・温めて）、合う料理まで添えます。次点3本と、ちょっと冒険の一本、予算に収まる代わりの一本も出ます。</p>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="screen-quiz" class="hidden">
+    <div class="progresswrap">
+      <div class="progressmeta"><span id="q-count">質問 1 / 18</span><span id="q-step-label">味の好みを聞いています</span></div>
+      <div class="progress"><div id="q-bar"></div></div>
+    </div>
+    <div class="card">
+      <div class="qtext" id="q-text"></div>
+      <p class="qsub" id="q-sub"></p>
+      <div class="opts" id="q-opts"></div>
+      <div class="navrow">
+        <button class="ghostbtn" id="btn-back" type="button">← もどる</button>
+      </div>
+    </div>
+    <p class="small center">当てはまるものがないときは、いちばん近いものを選んで大丈夫です。</p>
+  </section>
+
+  <!-- RESULT -->
+  <section id="screen-result" class="hidden">
+    <div class="hero" style="padding-top:16px;">
+      <div class="kicker">RESULT ・ 診断結果</div>
+      <div class="typename" id="r-typename"></div>
+      <p class="lead" id="r-typedesc"></p>
+    </div>
+
+    <div class="card">
+      <h2>あなたの味の好みマップ</h2>
+      <div class="radarwrap" id="r-radar"></div>
+      <div id="r-bars"></div>
+      <p class="small">10点満点。数字が大きいほど、その特徴が強いお酒が合います。</p>
+    </div>
+
+    <div class="card" id="r-best"></div>
+
+    <div class="card">
+      <h2>次点の3本</h2>
+      <div class="grid2" id="r-runners" style="grid-template-columns:1fr;"></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card" id="r-adventure" style="margin:0;"></div>
+      <div class="card" id="r-budget" style="margin:0;"></div>
+    </div>
+
+    <div class="card">
+      <h2>避けた方がいい方向</h2>
+      <p id="r-avoid" style="margin:0;"></p>
+    </div>
+
+    <button class="btn" id="btn-again" type="button" style="margin-top:18px;">もう一度診断する</button>
+    <p class="small center" style="margin-top:10px;">価格は2026年11月時点の目安です（720ml・税込）。実際の価格や在庫はお店でご確認ください。</p>
+  </section>
+
+  <footer>日本酒マッチング ・ 20歳未満の飲酒は法律で禁止されています。お酒は適量を。</footer>
+</div>
+
+<script>
+"use strict";
+/* ===== 味覚軸 10項目 =====
+0 甘さ / 1 香りの華やかさ / 2 果物っぽさ / 3 旨み・コク / 4 酸の爽やかさ
+5 後味のキレ / 6 まろやかさ / 7 軽さ・飲みやすさ / 8 米の風味 / 9 ふくよかさ */
+var AXES = ["甘さ","香りの華やかさ","果物っぽさ","旨み・コク","酸の爽やかさ","後味のキレ","まろやかさ","軽さ・飲みやすさ","米の風味","ふくよかさ"];
+
+/* ===== 質問（分岐つき・全18問） =====
+各選択肢 v = 10軸への加減点 */
+function Q(text, sub, opts){ return {text:text, sub:sub||"", opts:opts}; }
+function O(label, sub, v, tag){ return {label:label, sub:sub||"", v:v, tag:tag||null}; }
+
+var QUESTIONS = [
+  function(){ return Q("日本酒は、どんな場面で飲むことが多いですか？","",[
+    O("ごはんと一緒にゆっくり","食事を引き立てるタイプが合いやすいです",[0,0,0,1,0,1,0,0,1,0]),
+    O("お酒だけでじっくり味わいたい","香りや余韻を楽しむタイプ向きです",[0,1,1,0,0,0,1,0,0,1]),
+    O("どっちも同じくらい","バランス型を探します",[0,0,0,0,0,0,1,1,0,0]),
+    O("大勢でワイワイ飲むことが多い","飲みやすくて軽いタイプ向きです",[0,0,0,0,1,0,0,2,0,0])
+  ]);},
+  function(){ return Q("合わせるなら、どんな料理ですか？","いちばんよく合わせるものを選んでください",[
+    O("お刺身・お寿司","魚の繊細な味を邪魔しないタイプが合います",[-1,0,0,0,1,2,0,1,0,0]),
+    O("焼き魚・煮魚などの和食","旨みのあるタイプが合います",[0,0,0,2,0,1,0,0,1,1]),
+    O("焼き鳥・肉料理・揚げ物","しっかりした味に負けないタイプが合います",[0,0,0,2,0,0,0,0,1,2]),
+    O("チーズや洋食","爽やかな酸のあるタイプが合います",[0,0,0,1,2,0,0,0,0,1]),
+    O("和食全般・その日の献立次第","万能タイプを探します",[0,0,0,1,0,1,1,0,0,0])
+  ]);},
+  function(){ return Q("甘さは、どのくらいが好きですか？","「辛口」というのは、甘さ控えめで後味がすっと消える感じのことです",[
+    O("しっかり甘いのが好き","果汁のような甘さのあるタイプ向きです",[3,0,1,0,0,-1,1,-1,0,0]),
+    O("ほんのり甘いくらい","バランスの良いタイプ向きです",[1,0,0,0,0,0,1,0,0,0]),
+    O("甘さ控えめで、後味がすっと消えるのが好き","いわゆるスッキリタイプ向きです",[-2,0,0,0,0,3,0,1,0,0]),
+    O("甘くてもスッキリでも、その時々で","幅広く探します",[0,0,0,0,0,0,0,1,0,0])
+  ]);},
+  function(){ return Q("メロンや りんご、バナナのような、果物の香りがするお酒は好きですか？","グラスに鼻を近づけたときにふわっと香る、あの感じです",[
+    O("大好き。香りが楽しみの半分","華やかなタイプを深掘りします",[0,3,3,0,0,0,0,0,0,0],"fruit_yes"),
+    O("少し香るくらいがちょうどいい","穏やかな香りのタイプ向きです",[0,1,1,0,0,0,0,0,0,0],"fruit_mid"),
+    O("香りは控えめでいい","お米の風味が中心のタイプ向きです",[0,-2,-2,1,0,0,0,0,2,0],"fruit_no"),
+    O("飲んだことがなくて分からない","定番から探します",[0,1,1,0,0,0,0,1,0,0],"fruit_mid")
+  ]);},
+  function(ans){
+    var t = ans[3] && ans[3].tag;
+    if(t === "fruit_yes" || t === "fruit_mid"){
+      return Q("果物の香りなら、どれが一番惹かれますか？","前の答えに合わせて聞いています",[
+        O("メロンのような、みずみずしく上品な甘い香り","",[1,2,3,0,0,0,1,0,0,0]),
+        O("青りんごや洋なしのような、爽やかな香り","",[0,2,2,0,2,1,0,1,0,0]),
+        O("バナナや桃のような、まろやかで甘い香り","",[1,1,2,0,0,0,2,0,0,1]),
+        O("ベリーや柑橘のような、はつらつとした香り","",[0,1,2,0,3,1,0,1,0,0])
+      ]);
+    }
+    return Q("では、香りの代わりに何を楽しみたいですか？","前の答えに合わせて聞いています",[
+      O("炊きたてごはんのような、お米そのものの風味","",[0,0,0,1,0,0,1,0,3,0]),
+      O("何も主張しない、きれいで澄んだ味","",[-1,0,0,0,0,2,0,2,0,0]),
+      O("どっしりした旨みと飲みごたえ","",[0,0,0,3,0,0,0,-1,1,2]),
+      O("温めたときの、ほっとする香り","",[0,0,0,1,0,0,2,0,2,1],"warm")
+    ]);
+  },
+  function(){ return Q("飲む温度は、どれが好きですか？","同じお酒でも温度で味が大きく変わります",[
+    O("キンキンに冷やして飲みたい","冷やすと香りとキレが際立ちます",[0,1,0,0,0,2,0,1,0,0],"cold"),
+    O("冷蔵庫から出して少し置いたくらい","香りが開いてバランスが良くなります",[0,1,0,0,0,0,1,0,0,0],"cold"),
+    O("常温が落ち着く","お米の旨みが出やすい温度です",[0,0,0,1,0,0,1,0,1,1],"room"),
+    O("温めて飲む（燗）が好き","まろやかさと旨みが増します",[0,-1,0,2,0,0,2,-1,2,1],"warm")
+  ]);},
+  function(ans){
+    var t = ans[5] && ans[5].tag;
+    if(t === "warm"){
+      return Q("温めるときは、どのくらいが好みですか？","前の答えに合わせて聞いています",[
+        O("人肌くらい（ほんのり温かい）","香りがふわりと立ちます",[0,0,0,1,0,0,2,0,1,0]),
+        O("湯気が出るくらい、しっかり温かい","旨みとまろやかさが増します",[0,0,0,2,0,0,2,0,2,1]),
+        O("熱々が好き","飲みごたえのあるタイプ向きです",[0,0,0,2,0,1,0,0,1,2])
+      ]);
+    }
+    return Q("冷たいお酒は、どんな飲み心地が好きですか？","前の答えに合わせて聞いています",[
+      O("水のようにすっと入っていく感じ","軽くてキレの良いタイプ向きです",[-1,0,0,0,0,2,0,3,0,-1]),
+      O("とろっとまろやかに広がる感じ","ふくよかなタイプ向きです",[1,0,0,1,0,0,2,0,0,2]),
+      O("ピリッと引き締まる感じ","酸とキレのあるタイプ向きです",[0,0,0,0,2,2,0,1,0,0])
+    ]);
+  },
+  function(){ return Q("シュワシュワ泡のある日本酒（スパークリング）に興味はありますか？","シャンパンのように泡立つ、軽やかなタイプです",[
+    O("大好き／ぜひ飲みたい","泡のタイプも候補に入れます",[1,1,1,0,1,0,0,2,0,0],"spark_yes"),
+    O("たまにはいいかも","候補に少し入れます",[0,0,0,0,0,0,0,1,0,0],"spark_mid"),
+    O("普通の日本酒がいい","泡なしで探します",[0,0,0,1,0,0,0,0,1,0],"spark_no")
+  ]);},
+  function(){ return Q("白く濁った「にごり酒」はどうですか？","お米の粒が残っていて、とろっとクリーミーなタイプです",[
+    O("好き。あのとろっと感がいい","にごりも候補に入れます",[2,0,0,1,0,-1,2,0,1,1],"nigori_yes"),
+    O("飲んだことがないけど気になる","候補に少し入れます",[1,0,0,0,0,0,1,0,0,0],"nigori_mid"),
+    O("さらっと澄んだお酒がいい","澄んだタイプで探します",[-1,0,0,0,0,1,0,1,0,0],"nigori_no")
+  ]);},
+  function(){ return Q("「旨み・コク」はどのくらい欲しいですか？","だしの旨みのような、口に残る厚みのことです",[
+    O("しっかり濃いのが好き。出汁のように旨いやつ","",[0,0,0,3,0,0,0,-1,1,2]),
+    O("ほどほどにあると嬉しい","",[0,0,0,1,0,0,1,0,0,0]),
+    O("あっさり軽い方がいい","",[0,0,0,-2,0,1,0,2,0,-1])
+  ]);},
+  function(){ return Q("レモンやグレープフルーツのような、爽やかな酸っぱさは好きですか？","酸があると、後味が爽やかになって料理も進みます",[
+    O("好き。爽やかなのがいい","",[0,0,1,0,3,1,0,1,0,0]),
+    O("少しあるくらいがいい","",[0,0,0,0,1,0,0,0,0,0]),
+    O("酸っぱさは控えめがいい","",[0,0,0,1,-2,0,1,0,0,1])
+  ]);},
+  function(){ return Q("お酒の「アルコール感」はどうですか？","飲んだときにカッとくる強さのことです",[
+    O("強いのは苦手。やさしい飲み口がいい","度数控えめや、まろやかなタイプ向きです",[0,0,0,0,0,0,2,2,0,0],"alc_low"),
+    O("普通でいい","",[0,0,0,0,0,0,0,0,0,0]),
+    O("しっかり効く飲みごたえが好き","",[0,0,0,1,0,1,0,0,0,2],"alc_high")
+  ]);},
+  function(){ return Q("お米の風味は、どのくらい感じたいですか？","炊きたてごはんや、お餅のような素朴な風味です",[
+    O("しっかり感じたい。それが日本酒の良さ","",[0,-1,0,1,0,0,1,0,3,1]),
+    O("ほんのりでいい","",[0,0,0,0,0,0,0,0,1,0]),
+    O("果物の香りの方が大事","",[0,2,2,0,0,0,0,0,-2,0])
+  ]);},
+  function(){ return Q("後味は、どっちが好きですか？","",[
+    O("すっと消えて、次の一口が欲しくなる感じ","キレの良いタイプ向きです",[0,0,0,0,0,3,0,1,0,-1]),
+    O("じんわり長く残る感じ","余韻のあるタイプ向きです",[0,0,0,1,0,-2,1,0,0,2]),
+    O("どちらも好き","",[0,0,0,0,0,0,0,0,0,0])
+  ]);},
+  function(){ return Q("飲み心地は、どっち寄りが好きですか？","",[
+    O("軽くて、水のように飲みやすい方","",[-1,0,0,-1,0,1,0,3,0,-2]),
+    O("重みがあって、満足感のある方","",[1,0,0,2,0,0,1,-2,0,3]),
+    O("真ん中くらい","",[0,0,0,0,0,0,1,0,0,0])
+  ]);},
+  function(){ return Q("日本酒を飲む経験は、どのくらいですか？","レベルに合った一本を選びます",[
+    O("ほぼ初めて。これから知りたい","飲みやすい定番から選びます",[0,0,0,0,0,0,1,2,0,0],"beginner"),
+    O("たまに飲む。定番はだいたい分かる","一歩進んだ一本を選びます",[0,0,0,0,0,0,0,0,0,0]),
+    O("よく飲む。銘柄もいろいろ試した","通好みの一本も入れます",[0,0,0,1,0,0,0,0,1,0],"expert"),
+    O("詳しい方だと思う","個性のある一本を選びます",[0,1,0,1,1,0,0,0,0,0],"expert")
+  ]);},
+  function(){ return Q("予算はどのくらいですか？","720mlのボトル1本あたりの目安です",[
+    O("2,000円まで","日常飲みの範囲で探します",[0,0,0,0,0,0,0,0,0,0],"b2000"),
+    O("4,000円まで","定番の良いところを探します",[0,0,0,0,0,0,0,0,0,0],"b4000"),
+    O("8,000円まで","特別な一本も候補に入ります",[0,0,0,0,0,0,0,0,0,0],"b8000"),
+    O("こだわらない。合うものを","価格より相性で選びます",[0,0,0,0,0,0,0,0,0,0],"bany")
+  ]);},
+  function(){ return Q("最後に、これだけは避けたいものはありますか？","苦手な方向を結果から外します",[
+    O("甘ったるいのは苦手","",[-2,0,0,0,0,1,0,0,0,0],"avoid_sweet"),
+    O("香りが強すぎるのは苦手","",[0,-2,-1,0,0,0,0,0,0,0],"avoid_aroma"),
+    O("重くて濃すぎるのは苦手","",[0,0,0,-2,0,0,0,1,0,-2],"avoid_heavy"),
+    O("アルコールのカッとくる感じが苦手","",[0,0,0,0,0,0,1,1,0,0],"avoid_alc"),
+    O("特にない","",[0,0,0,0,0,0,0,0,0,0],null)
+  ]);}
+];
+var TOTAL = QUESTIONS.length;
+
+/* ===== 銘柄DB 48本 =====
+p: 10軸プロフィール(0-10) / price: 目安円(720ml) / diff: easy|mid|hard|veryhard
+temp: おすすめ温度 / food: 合う料理 / cls: 分類名＋一言説明 */
+var BOTTLES = [
+ {name:"獺祭 純米大吟醸 45",brewery:"旭酒造",pref:"山口県",cls:"純米大吟醸（お米を45%まで磨いた、華やかなタイプ）",price:2200,diff:"easy",p:[6,9,9,4,4,6,6,6,3,5],temp:"よく冷やして（8℃くらい）",food:"白身の刺身、カルパッチョ、フルーツ",aroma:"熟したメロンと白桃のような、甘く華やかな香り",mouth:"なめらかで、果汁のような甘さがすっと広がる",finish:"きれいに消えて、香りの余韻がほんのり残る",tags:["fruit"]},
+ {name:"獺祭 純米大吟醸 磨き二割三分",brewery:"旭酒造",pref:"山口県",cls:"純米大吟醸（お米を23%まで磨いた、最高峰の華やかさ）",price:5800,diff:"mid",p:[6,10,10,3,4,6,7,6,2,5],temp:"よく冷やして（8℃くらい）",food:"白身の刺身、キャビア、繊細な和食",aroma:"メロンとライチが重なる、とても華やかな香り",mouth:"絹のようになめらかで、透明感のある甘さ",finish:"長く上品な余韻。特別な日に",tags:["fruit"]},
+ {name:"久保田 千寿",brewery:"朝日酒造",pref:"新潟県",cls:"吟醸（香り穏やかで、食事に寄り添うタイプ）",price:1800,diff:"easy",p:[3,4,3,5,4,8,5,7,5,4],temp:"冷やして〜常温",food:"焼き魚、煮物、おでん",aroma:"控えめで、洋なしのような穏やかな香り",mouth:"すっきり軽やかで、ごはんの邪魔をしない",finish:"スパッとキレて、次の一口が進む",tags:[]},
+ {name:"久保田 萬寿",brewery:"朝日酒造",pref:"新潟県",cls:"純米大吟醸（新潟を代表する、上品で深みのある一本）",price:3900,diff:"easy",p:[4,7,6,6,4,6,7,4,5,7],temp:"冷やして（10℃くらい）",food:"刺身の盛り合わせ、懐石料理",aroma:"メロンと白い花のような、上品な香り",mouth:"まろやかで深みがあり、旨みがじんわり",finish:"長く穏やかな余韻",tags:[]},
+ {name:"八海山 純米大吟醸",brewery:"八海醸造",pref:"新潟県",cls:"純米大吟醸（澄んだ味わいで、キレが自慢のタイプ）",price:3600,diff:"easy",p:[3,6,5,5,4,8,6,6,5,5],temp:"よく冷やして",food:"刺身、寿司、天ぷら",aroma:"青りんごのような、爽やかで上品な香り",mouth:"澄んでいて、雪どけ水のようにきれい",finish:"きりっとキレる、気持ちのいい後味",tags:[]},
+ {name:"八海山 特別本醸造",brewery:"八海醸造",pref:"新潟県",cls:"本醸造（すっきり軽く、毎日の食卓向き）",price:1600,diff:"easy",p:[2,3,2,4,3,8,4,8,5,3],temp:"冷やして〜温めても",food:"焼き魚、煮物、家庭の和食全般",aroma:"穏やかで、お米の素朴な香り",mouth:"軽くすっきり、飲み疲れしない",finish:"さっぱりとキレる",tags:["warm"]},
+ {name:"出羽桜 桜花吟醸",brewery:"出羽桜酒造",pref:"山形県",cls:"吟醸（りんごのような香りが人気の定番）",price:2200,diff:"easy",p:[5,8,8,4,5,6,6,6,3,4],temp:"よく冷やして",food:"白身の刺身、サラダ、チーズ",aroma:"赤りんごのような、明るく華やかな香り",mouth:"みずみずしく、ほんのり甘い",finish:"爽やかに消えていく",tags:["fruit"]},
+ {name:"出羽桜 純米大吟醸 一路",brewery:"出羽桜酒造",pref:"山形県",cls:"純米大吟醸（香りと旨みのバランスが良い上位の一本）",price:4800,diff:"mid",p:[5,8,7,6,4,6,7,4,4,6],temp:"冷やして（10℃くらい）",food:"刺身、焼き鳥の塩、和食全般",aroma:"洋なしとメロンのような、奥行きのある香り",mouth:"まろやかで旨みもしっかり",finish:"じんわり残る上品な余韻",tags:["fruit"]},
+ {name:"新政 No.6 R-type",brewery:"新政酒造",pref:"秋田県",cls:"純米酒（若々しく爽やか、今どきの人気タイプ）",price:2800,diff:"hard",p:[5,7,7,5,8,6,5,6,4,4],temp:"よく冷やして",food:"カルパッチョ、チーズ、白身魚",aroma:"グレープフルーツと青りんごのような、爽やかな香り",mouth:"ピチッと若々しく、爽やかな酸が心地いい",finish:"爽やかで軽やかな余韻",tags:["fruit"]},
+ {name:"新政 コスモス（Colors）",brewery:"新政酒造",pref:"秋田県",cls:"純米酒（ベリーのような甘酸っぱさが特徴）",price:2600,diff:"hard",p:[7,7,7,5,7,4,6,5,4,5],temp:"よく冷やして",food:"ローストビーフ、ベリー系デザート、チーズ",aroma:"いちごやベリーを思わせる、甘酸っぱい香り",mouth:"ジューシーで、甘さと酸のバランスが良い",finish:"甘酸っぱい余韻が残る",tags:["fruit"]},
+ {name:"十四代 本丸 特別本醸造",brewery:"高木酒造",pref:"山形県",cls:"特別本醸造（入手困難で知られる、伝説的な人気銘柄の入門編）",price:3500,diff:"veryhard",p:[6,9,9,6,4,6,7,4,4,6],temp:"よく冷やして",food:"刺身、寿司、上品な和食",aroma:"メロンと桃のような、圧倒的に華やかな香り",mouth:"とろっとまろやかで、旨みと甘さが重なる",finish:"長く贅沢な余韻",tags:["fruit"]},
+ {name:"十四代 中取り純米大吟醸",brewery:"高木酒造",pref:"山形県",cls:"純米大吟醸（最も良い部分だけを集めた、最上級の一本）",price:8500,diff:"veryhard",p:[6,10,10,6,4,6,8,3,3,7],temp:"よく冷やして",food:"特上の刺身、懐石料理",aroma:"白桃とメロンが溶け合うような、極上の香り",mouth:"絹のようにまろやかで、深い甘み",finish:"いつまでも続くような長い余韻",tags:["fruit"]},
+ {name:"而今 純米吟醸 千本錦",brewery:"木屋正酒造",pref:"三重県",cls:"純米吟醸（果物のようなジューシーさで大人気）",price:2600,diff:"hard",p:[6,8,9,6,6,5,6,5,4,6],temp:"よく冷やして",food:"刺身、焼き鳥、チーズ",aroma:"パイナップルとりんごのような、弾ける香り",mouth:"ジューシーで、果汁のような瑞々しさ",finish:"爽やかさと甘さが残る余韻",tags:["fruit"]},
+ {name:"田酒 特別純米",brewery:"西田酒造店",pref:"青森県",cls:"特別純米（お米の旨みがしっかり、食中酒の名手）",price:2000,diff:"easy",p:[3,4,3,8,3,6,6,4,8,7],temp:"冷やして〜温めても美味しい",food:"焼き魚、肉じゃが、煮物",aroma:"炊きたてごはんのような、お米の素朴な香り",mouth:"旨みがどっしり、飲みごたえがある",finish:"旨みの余韻がじんわり",tags:["warm"]},
+ {name:"田酒 純米大吟醸",brewery:"西田酒造店",pref:"青森県",cls:"純米大吟醸（旨みと華やかさを両立した上位の一本）",price:4500,diff:"mid",p:[4,7,6,7,3,6,7,4,6,7],temp:"冷やして（10℃くらい）",food:"刺身、寿司、和食全般",aroma:"洋なしのような上品な香りと、お米の深み",mouth:"まろやかで、旨みが厚い",finish:"長く穏やかな余韻",tags:[]},
+ {name:"飛露喜 特別純米",brewery:"廣木酒造本店",pref:"福島県",cls:"特別純米（バランスの良さで根強い人気）",price:2200,diff:"hard",p:[4,6,5,7,4,6,7,4,6,7],temp:"冷やして〜常温",food:"焼き魚、刺身、煮物",aroma:"穏やかで、メロンの皮のような爽やかな香り",mouth:"まろやかで旨みがあり、全体の調和が良い",finish:"きれいにまとまる余韻",tags:[]},
+ {name:"黒龍 純吟",brewery:"黒龍酒造",pref:"福井県",cls:"純米吟醸（水のように澄んだ、福井の名酒）",price:2400,diff:"easy",p:[3,6,5,5,4,7,6,6,5,5],temp:"よく冷やして",food:"刺身、寿司、白身魚の煮付け",aroma:"青りんごのような、澄んだ爽やかな香り",mouth:"きれいでなめらか、雑味がない",finish:"すっとキレる上品な後味",tags:[]},
+ {name:"黒龍 大吟醸",brewery:"黒龍酒造",pref:"福井県",cls:"大吟醸（贈り物にも選ばれる、気品のある一本）",price:4200,diff:"mid",p:[4,8,7,5,4,7,7,5,4,6],temp:"よく冷やして",food:"刺身、懐石料理",aroma:"白桃と洋なしのような、気品のある香り",mouth:"絹のようになめらかで上品",finish:"長く澄んだ余韻",tags:[]},
+ {name:"梵 ときしらず",brewery:"加藤吉平商店",pref:"福井県",cls:"純米大吟醸（氷温で寝かせた、まろやかな熟成感）",price:2800,diff:"mid",p:[4,6,5,7,3,5,8,4,5,7],temp:"冷やして〜常温",food:"焼き魚、煮物、チーズ",aroma:"穏やかで、まろやかな甘い香り",mouth:"とろっとまろやか、角がない",finish:"じんわり続く旨みの余韻",tags:["warm"]},
+ {name:"梵 GOLD 無濾過純米大吟醸",brewery:"加藤吉平商店",pref:"福井県",cls:"純米大吟醸（しぼりたての力強さと華やかさ）",price:5200,diff:"mid",p:[5,8,7,7,4,5,7,3,5,8],temp:"よく冷やして",food:"刺身、焼き鳥、肉料理",aroma:"メロンのような華やかさと、力強さ",mouth:"ふくよかで、旨みが厚い",finish:"長い余韻と満足感",tags:[]},
+ {name:"真澄 純米吟醸 辛口生一本",brewery:"宮坂醸造",pref:"長野県",cls:"純米吟醸（甘さ控えめでキレが良く、食事に合う）",price:1900,diff:"easy",p:[2,5,4,6,4,8,5,6,6,5],temp:"冷やして〜常温",food:"焼き魚、天ぷら、刺身",aroma:"りんごのような、爽やかで控えめな香り",mouth:"すっきりしていて、旨みもある",finish:"スパッと気持ちよくキレる",tags:[]},
+ {name:"真澄 純米吟醸 あらばしり",brewery:"宮坂醸造",pref:"長野県",cls:"純米吟醸（しぼりたての若々しさと躍動感）",price:2300,diff:"mid",p:[4,7,6,6,6,6,5,5,5,5],temp:"よく冷やして",food:"刺身、焼き鳥、揚げ物",aroma:"青りんごのような、若々しい香り",mouth:"ピチッと躍動感があり、爽やか",finish:"軽やかにキレる",tags:[]},
+ {name:"上善如水 純米吟醸",brewery:"白瀧酒造",pref:"新潟県",cls:"純米吟醸（名前の通り、水のように澄んだ飲み口）",price:1700,diff:"easy",p:[3,5,4,3,4,7,5,9,3,3],temp:"よく冷やして",food:"刺身、サラダ、淡白な料理",aroma:"ほのかに果物のような、爽やかな香り",mouth:"水のように軽く、すっと入る",finish:"さらっと消える、軽い後味",tags:[]},
+ {name:"浦霞 純米吟醸 禅",brewery:"佐浦",pref:"宮城県",cls:"純米吟醸（海の幸に合わせたい、端正な一本）",price:3200,diff:"easy",p:[3,6,5,6,4,7,6,5,5,5],temp:"冷やして（10℃くらい）",food:"寿司、刺身、貝料理",aroma:"穏やかで上品な、果物の香り",mouth:"端正でバランスが良く、旨みもある",finish:"きれいにキレる",tags:[]},
+ {name:"一ノ蔵 特別純米酒 辛口",brewery:"一ノ蔵",pref:"宮城県",cls:"特別純米（甘さ控えめ、毎日の晩酌の頼れる相棒）",price:1500,diff:"easy",p:[2,3,2,6,3,8,5,6,7,5],temp:"冷やして〜温めても",food:"焼き魚、煮物、おでん、家庭料理全般",aroma:"お米の素朴な香りが中心",mouth:"すっきりしていて、旨みもしっかり",finish:"きりっとキレる",tags:["warm"]},
+ {name:"写楽 純米吟醸",brewery:"宮泉銘醸",pref:"福島県",cls:"純米吟醸（果物のような香りと、きれいな旨み）",price:2400,diff:"mid",p:[5,8,8,6,5,6,6,5,4,5],temp:"よく冷やして",food:"刺身、白身魚、チーズ",aroma:"メロンとりんごのような、華やかな香り",mouth:"みずみずしく、旨みとのバランスが良い",finish:"爽やかにまとまる",tags:["fruit"]},
+ {name:"鳳凰美田 純米大吟醸 山田錦",brewery:"小林酒造",pref:"栃木県",cls:"純米大吟醸（完熟果物のような、贅沢な香り）",price:3800,diff:"easy",p:[6,9,9,5,4,5,7,4,3,6],temp:"よく冷やして",food:"刺身、フルーツ、チーズ",aroma:"完熟メロンと桃のような、贅沢な香り",mouth:"とろっと甘く、まろやか",finish:"甘い香りの余韻が続く",tags:["fruit"]},
+ {name:"鳳凰美田 純米吟醸 初しぼり",brewery:"小林酒造",pref:"栃木県",cls:"純米吟醸（しぼりたてのフレッシュさが魅力）",price:1900,diff:"easy",p:[5,8,8,5,6,6,5,6,4,4],temp:"よく冷やして",food:"刺身、サラダ、焼き鳥",aroma:"青りんごとマスカットのような、爽やかな香り",mouth:"フレッシュで弾けるような瑞々しさ",finish:"軽やかにキレる",tags:["fruit"]},
+ {name:"作 雅乃智 中取り",brewery:"清水清三郎商店",pref:"三重県",cls:"純米大吟醸（最もバランスの良い部分だけを集めた一本）",price:2600,diff:"easy",p:[5,8,8,6,5,6,7,5,4,6],temp:"よく冷やして",food:"刺身、寿司、和食全般",aroma:"洋なしと白桃のような、優しい華やかさ",mouth:"なめらかで、旨みと香りの調和が良い",finish:"上品な余韻",tags:["fruit"]},
+ {name:"作 恵乃智",brewery:"清水清三郎商店",pref:"三重県",cls:"純米吟醸（手に取りやすい価格で、作の入門に）",price:1900,diff:"easy",p:[4,7,7,5,5,6,6,6,4,5],temp:"よく冷やして",food:"刺身、焼き魚、チーズ",aroma:"りんごのような、明るい香り",mouth:"爽やかで飲みやすく、旨みもある",finish:"きれいにまとまる",tags:["fruit"]},
+ {name:"鍋島 特別純米",brewery:"富久千代酒造",pref:"佐賀県",cls:"特別純米（ガス感のある、若々しく爽やかな味わい）",price:2100,diff:"mid",p:[4,6,6,6,6,6,5,6,5,5],temp:"よく冷やして",food:"焼き魚、刺身、揚げ物",aroma:"爽やかで、ほのかに果物の香り",mouth:"ピチッとしたガス感と、しっかりした旨み",finish:"爽やかにキレる",tags:[]},
+ {name:"鍋島 純米大吟醸",brewery:"富久千代酒造",pref:"佐賀県",cls:"純米大吟醸（華やかさと旨みを兼ね備えた上位酒）",price:4500,diff:"mid",p:[5,8,7,6,4,6,7,4,4,6],temp:"冷やして（10℃くらい）",food:"刺身、寿司、懐石料理",aroma:"メロンのような上品な華やかさ",mouth:"まろやかで奥行きがある",finish:"長い上品な余韻",tags:[]},
+ {name:"東洋美人 壱番纏",brewery:"澄川酒造場",pref:"山口県",cls:"純米大吟醸（美しい香りと、澄んだ味わいの人気酒）",price:3000,diff:"hard",p:[5,9,8,5,4,6,7,5,3,5],temp:"よく冷やして",food:"白身の刺身、寿司",aroma:"白桃と花のような、美しい香り",mouth:"澄んでいてなめらか、透明感がある",finish:"きれいに消える上品な後味",tags:["fruit"]},
+ {name:"すず音",brewery:"一ノ蔵",pref:"宮城県",cls:"発泡清酒（シャンパンのような泡立つ、甘く軽いタイプ）",price:1200,diff:"easy",p:[8,6,6,2,5,3,6,9,2,2],temp:"キンキンに冷やして",food:"前菜、フルーツ、デザート、乾杯に",aroma:"ほんのり甘く、爽やかな香り",mouth:"シュワっと軽く、甘酸っぱくて飲みやすい（度数5%）",finish:"軽やかに消える",tags:["spark"]},
+ {name:"松竹梅白壁蔵 澪",brewery:"宝酒造",pref:"兵庫県",cls:"スパークリング清酒（スーパーでも買える、泡の入門）",price:900,diff:"easy",p:[8,5,6,2,5,3,6,9,2,2],temp:"キンキンに冷やして",food:"乾杯、前菜、デザート",aroma:"マスカットのような、甘い香り",mouth:"シュワシュワと甘く、とても軽い（度数5%）",finish:"さらっと軽い",tags:["spark"]},
+ {name:"七賢 スパークリング 星ノ輝",brewery:"山梨銘醸",pref:"山梨県",cls:"スパークリング（瓶の中で二次発酵させた、本格派の泡）",price:2800,diff:"mid",p:[4,7,6,4,7,6,5,7,3,4],temp:"キンキンに冷やして",food:"前菜、刺身、チーズ、乾杯に",aroma:"青りんごのような、爽やかで上品な香り",mouth:"きめ細かい泡と、爽やかな酸",finish:"ドライで引き締まった余韻",tags:["spark"]},
+ {name:"白川郷 純米にごり酒",brewery:"三輪酒造",pref:"岐阜県",cls:"にごり酒（とろっとクリーミー、甘さしっかり）",price:1400,diff:"easy",p:[8,3,3,6,2,2,8,4,7,6],temp:"よく冷やして",food:"辛い料理、焼き鳥のタレ、チーズ",aroma:"お米とヨーグルトのような、まろやかな香り",mouth:"とろっとクリーミーで、甘さと旨みが濃い",finish:"まろやかな余韻が残る",tags:["nigori"]},
+ {name:"庭のうぐいす はなびらにごり",brewery:"山口酒造場",pref:"福岡県",cls:"にごり酒（春の限定、ピチピチと弾ける爽やかなにごり）",price:1800,diff:"mid",p:[6,6,6,4,6,4,6,6,4,4],temp:"よく冷やして",food:"刺身、前菜、サラダ",aroma:"桃のような、甘く爽やかな香り",mouth:"ピチッと弾けて、にごりのまろやかさも",finish:"爽やかな余韻",tags:["nigori","spark"]},
+ {name:"出羽桜 とろけるやまがたにごり",brewery:"出羽桜酒造",pref:"山形県",cls:"にごり酒（デザートのようにとろける甘さ）",price:1500,diff:"easy",p:[9,4,4,5,2,2,8,5,6,5],temp:"よく冷やして",food:"デザート代わりに、チーズ、辛い料理",aroma:"甘酒のような、優しい甘い香り",mouth:"とろっとろで、デザートのような甘さ",finish:"甘い余韻がじんわり",tags:["nigori"]},
+ {name:"雪の茅舎 純米吟醸",brewery:"齋彌酒造店",pref:"秋田県",cls:"純米吟醸（なめらかさと旨みの調和が美しい）",price:2600,diff:"easy",p:[4,6,5,7,3,6,8,4,6,7],temp:"冷やして〜常温",food:"焼き魚、煮物、刺身",aroma:"穏やかで、まろやかな香り",mouth:"絹のようになめらかで、旨みが深い",finish:"じんわり長い余韻",tags:["warm"]},
+ {name:"くどき上手 純米大吟醸",brewery:"亀の井酒造",pref:"山形県",cls:"純米大吟醸（華やかな香りで、贈り物にも人気）",price:3800,diff:"easy",p:[5,9,8,5,4,6,7,5,3,6],temp:"よく冷やして",food:"刺身、寿司",aroma:"パイナップルとメロンのような、華やかな香り",mouth:"なめらかで、甘みと旨みのバランスが良い",finish:"華やかな余韻",tags:["fruit"]},
+ {name:"磯自慢 特別本醸造",brewery:"磯自慢酒造",pref:"静岡県",cls:"特別本醸造（魚介のためにあるような、端正な食中酒）",price:2200,diff:"mid",p:[2,5,4,5,4,8,5,7,5,4],temp:"冷やして（10℃くらい）",food:"刺身、寿司、貝料理",aroma:"控えめで、爽やかな香り",mouth:"端正ですっきり、魚の味を引き立てる",finish:"スパッとキレる",tags:[]},
+ {name:"醸し人九平次 純米大吟醸 彼の地",brewery:"萬乗醸造",pref:"愛知県",cls:"純米大吟醸（ワインのような爽やかさ、今どきの名酒）",price:4200,diff:"mid",p:[4,7,7,5,8,6,5,6,4,5],temp:"よく冷やして、ワイングラスで",food:"カルパッチョ、チーズ、洋食",aroma:"グレープフルーツのような、爽やかな香り",mouth:"爽やかな酸が際立ち、ワインのよう",finish:"爽やかで長い余韻",tags:["fruit"]},
+ {name:"仙禽 クラシック仙禽",brewery:"せんきん",pref:"栃木県",cls:"純米酒（甘酸っぱくジューシー、新感覚の味わい）",price:1900,diff:"easy",p:[7,6,7,5,8,4,6,5,4,5],temp:"よく冷やして",food:"チーズ、洋食、ローストポーク",aroma:"マスカットのような、甘酸っぱい香り",mouth:"ジューシーで、甘さと酸が弾ける",finish:"甘酸っぱい余韻",tags:["fruit"]},
+ {name:"風の森 ALPHA 1",brewery:"油長酒造",pref:"奈良県",cls:"純米酒（しぼりたてのガス感と、ラムネのような爽やかさ）",price:1800,diff:"easy",p:[6,6,7,5,7,5,5,7,4,4],temp:"よく冷やして",food:"刺身、前菜、サラダ",aroma:"ラムネと青りんごのような、爽やかな香り",mouth:"ピチピチと弾けて、瑞々しい（度数14%）",finish:"爽やかにキレる",tags:["spark"]},
+ {name:"産土 2023 山田錦",brewery:"花の香酒造",pref:"熊本県",cls:"純米吟醸（土地の味を映す、ピチピチと若々しい一本）",price:2400,diff:"hard",p:[5,7,7,6,7,5,6,6,5,5],temp:"よく冷やして",food:"刺身、焼き鳥、チーズ",aroma:"マスカットのような、若々しい香り",mouth:"ガス感とジューシーさが共存",finish:"爽やかな余韻",tags:["fruit"]},
+ {name:"天美 特別純米",brewery:"長州酒造",pref:"山口県",cls:"特別純米（白桃のような香りと、きれいな旨み）",price:1900,diff:"easy",p:[4,7,7,6,5,6,6,6,5,5],temp:"よく冷やして",food:"刺身、焼き魚、白身魚",aroma:"白桃のような、優しい甘い香り",mouth:"きれいでバランスが良く、旨みもある",finish:"すっきりまとまる",tags:["fruit"]},
+ {name:"楽器正宗 本醸造 中取り",brewery:"大木代吉本店",pref:"福島県",cls:"本醸造（手頃なのに果物のような香り、コスパの名酒）",price:1600,diff:"easy",p:[5,7,7,5,5,6,6,7,4,4],temp:"よく冷やして",food:"刺身、焼き鳥、揚げ物",aroma:"メロンとバナナのような、明るい香り",mouth:"軽やかでジューシー、飲みやすい",finish:"爽やかにキレる",tags:["fruit"]}
+];
+
+/* ===== 状態 ===== */
+var answers = [];      /* 選んだ選択肢オブジェクトの配列 */
+var userVec = null;
+var selectedIdx = null;
+
+var elStart = document.getElementById("screen-start");
+var elQuiz = document.getElementById("screen-quiz");
+var elResult = document.getElementById("screen-result");
+var elQText = document.getElementById("q-text");
+var elQSub = document.getElementById("q-sub");
+var elQOpts = document.getElementById("q-opts");
+var elQCount = document.getElementById("q-count");
+var elQBar = document.getElementById("q-bar");
+var elBtnBack = document.getElementById("btn-back");
+
+function show(screen){
+  elStart.classList.add("hidden"); elQuiz.classList.add("hidden"); elResult.classList.add("hidden");
+  screen.classList.remove("hidden");
+  window.scrollTo(0,0);
+}
+
+function currentQuestion(){
+  return QUESTIONS[answers.length](answers);
+}
+
+function renderQuestion(){
+  selectedIdx = null;
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  var q = currentQuestion();
+  var n = answers.length + 1;
+  elQCount.textContent = "質問 " + n + " / " + TOTAL;
+  elQBar.style.width = Math.round((answers.length / TOTAL) * 100) + "%";
+  document.getElementById("q-step-label").textContent =
+    n <= 6 ? "味の好みを聞いています" : (n <= 12 ? "飲み方を深掘りしています" : "仕上げの質問です");
+  elQText.textContent = q.text;
+  elQSub.textContent = q.sub || "";
+  elQSub.style.display = q.sub ? "" : "none";
+  elQOpts.innerHTML = "";
+  q.opts.forEach(function(opt, i){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "opt";
+    var main = document.createElement("span"); main.textContent = opt.label; b.appendChild(main);
+    if(opt.sub){ var s = document.createElement("span"); s.className = "sub"; s.textContent = opt.sub; b.appendChild(s); }
+    b.addEventListener("click", function(){
+      if(selectedIdx !== null) return;
+      selectedIdx = i;
+      var all = elQOpts.querySelectorAll(".opt");
+      all.forEach(function(x){ x.classList.remove("selected"); });
+      b.classList.add("selected");
+      setTimeout(function(){
+        answers.push(opt);
+        b.classList.remove("selected");
+        if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+        if(answers.length >= TOTAL){ finish(); } else { renderQuestion(); }
+      }, 220);
+    });
+    elQOpts.appendChild(b);
+  });
+  elBtnBack.style.visibility = answers.length === 0 ? "hidden" : "visible";
+}
+
+elBtnBack.addEventListener("click", function(){
+  if(answers.length > 0){ answers.pop(); renderQuestion(); }
+});
+document.getElementById("btn-start").addEventListener("click", function(){
+  answers = []; show(elQuiz); renderQuestion();
+});
+document.getElementById("btn-again").addEventListener("click", function(){
+  answers = []; userVec = null; show(elQuiz); renderQuestion();
+});
+
+/* ===== 計算 ===== */
+function computeVec(){
+  var v = [5,5,5,5,5,5,5,5,5,5];
+  answers.forEach(function(a){ a.v.forEach(function(d,i){ v[i] += d; }); });
+  return v.map(function(x){ return Math.max(0, Math.min(10, x)); });
+}
+function budgetLimit(){
+  var a = answers[16];
+  if(!a) return Infinity;
+  if(a.tag === "b2000") return 2000;
+  if(a.tag === "b4000") return 4000;
+  if(a.tag === "b8000") return 8000;
+  return Infinity;
+}
+function wantsTag(tag){
+  /* spark / nigori の希望を answers から判定 */
+  for(var i=0;i<answers.length;i++){
+    var t = answers[i].tag;
+    if(tag==="spark" && t==="spark_no") return false;
+    if(tag==="nigori" && t==="nigori_no") return false;
+  }
+  return true;
+}
+function scoreBottle(vec, b){
+  var sum = 0;
+  for(var i=0;i<10;i++){ var d = vec[i]-b.p[i]; sum += d*d; }
+  var dist = Math.sqrt(sum);
+  var maxDist = Math.sqrt(10*100);
+  var pct = Math.round(100 - (dist/maxDist)*55);
+  return Math.max(55, Math.min(98, pct));
+}
+function ranked(vec){
+  var list = BOTTLES.map(function(b){ return {b:b, score:scoreBottle(vec,b)}; });
+  list.sort(function(x,y){ return y.score - x.score; });
+  return list;
+}
+function typeName(vec){
+  var idx = vec.map(function(v,i){ return [v,i]; }).sort(function(a,b){ return b[0]-a[0]; });
+  var top = idx[0][1], second = idx[1][1];
+  var key = [Math.min(top,second), Math.max(top,second)].join("-");
+  var map = {
+    "0-1":"甘く華やかな、果実の誘惑タイプ","0-2":"甘くジューシーな、果実タイプ","1-2":"華やかフルーティータイプ",
+    "2-4":"爽やかフルーティータイプ","1-4":"香り爽やか、すっきりタイプ","3-9":"旨みどっしり、ふくよかタイプ",
+    "3-8":"お米の旨みを愛するタイプ","5-7":"軽やかキレッキレタイプ","6-9":"まろやかふくよかタイプ",
+    "0-6":"甘くまろやかな、癒しタイプ","4-7":"爽やか軽やかタイプ","3-6":"まろやか旨みタイプ",
+    "7-8":"軽く澄んだ、水のようなタイプ","0-9":"甘くふくよかな、贅沢タイプ","2-9":"果実ふくよかタイプ",
+    "4-5":"爽やかキレタイプ","1-9":"華やかふくよかタイプ","6-8":"まろやか米旨タイプ","0-7":"甘く軽やかタイプ",
+    "5-8":"キレと米の旨みタイプ","1-7":"華やか軽やかタイプ","3-5":"旨みとキレの食中酒タイプ","4-9":"爽やかふくよかタイプ",
+    "2-7":"果実軽やかタイプ","0-4":"甘酸っぱいジューシータイプ","0-3":"甘旨タイプ","1-3":"華やか旨みタイプ",
+    "1-5":"華やかキレタイプ","1-6":"華やかまろやかタイプ","1-8":"香りと米のバランスタイプ","2-3":"果実と旨みのタイプ",
+    "2-5":"果実キレタイプ","2-6":"果実まろやかタイプ","2-8":"果実と米のタイプ","3-4":"旨み爽やかタイプ",
+    "3-7":"旨み軽やかタイプ","4-6":"爽やかまろやかタイプ","4-8":"爽やか米タイプ","5-6":"キレまろやかタイプ",
+    "5-9":"キレふくよかタイプ","6-7":"まろやか軽やかタイプ","7-9":"軽やかふくよかタイプ","8-9":"米のふくよかタイプ",
+    "0-5":"甘くキレるタイプ","0-8":"甘さと米のタイプ","4-4":"爽やかタイプ"
+  };
+  return map[key] || "バランスの取れた、万能タイプ";
+}
+function typeDesc(vec){
+  var parts = [];
+  if(vec[2]>=7) parts.push("果物のような香りと瑞々しさが大好物");
+  if(vec[3]>=7) parts.push("お酒の旨みと飲みごたえをしっかり求める");
+  if(vec[5]>=7) parts.push("後味がすっと消える気持ちよさが大事");
+  if(vec[0]>=7) parts.push("ほんのり甘いと幸せを感じる");
+  if(vec[7]>=7) parts.push("重さより、軽く飲める心地よさが好み");
+  if(vec[4]>=7) parts.push("爽やかな酸でリフレッシュしたい");
+  if(vec[8]>=7) parts.push("お米そのものの風味に日本酒らしさを感じる");
+  if(parts.length===0) parts.push("香り・旨み・キレのバランスを大切にする");
+  return parts.slice(0,2).join("。") + "タイプです。";
+}
+function diffLabel(d){
+  if(d==="easy") return ["手に入りやすい","easy"];
+  if(d==="mid") return ["比較的手に入りやすい","easy"];
+  if(d==="hard") return ["やや手に入りにくい","hard"];
+  return ["入手困難","hard"];
+}
+function yen(n){ return n.toLocaleString("ja-JP") + "円"; }
+
+function radarSVG(vec){
+  var cx=150, cy=140, R=95;
+  function pt(i, val){
+    var ang = -Math.PI/2 + i*(2*Math.PI/10);
+    var r = R * (val/10);
+    return [cx + r*Math.cos(ang), cy + r*Math.sin(ang)];
+  }
+  function ring(scale){
+    var pts = [];
+    for(var i=0;i<10;i++){ var ang=-Math.PI/2+i*(2*Math.PI/10); pts.push((cx+R*scale*Math.cos(ang)).toFixed(1)+","+(cy+R*scale*Math.sin(ang)).toFixed(1)); }
+    return pts.join(" ");
+  }
+  var dataPts = vec.map(function(v,i){ var p=pt(i,v); return p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" ");
+  var labels = "";
+  for(var i=0;i<10;i++){
+    var ang=-Math.PI/2+i*(2*Math.PI/10);
+    var lx = cx + (R+26)*Math.cos(ang), ly = cy + (R+18)*Math.sin(ang);
+    var anchor = Math.abs(Math.cos(ang))<0.35 ? "middle" : (Math.cos(ang)>0 ? "start" : "end");
+    var short = ["甘さ","華やか","果物","旨み","酸","キレ","まろやか","軽さ","米","ふくよか"][i];
+    labels += '<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="'+anchor+'" font-size="11" fill="currentColor">'+short+'</text>';
+  }
+  return '<svg width="300" height="280" viewBox="0 0 300 280" role="img" aria-label="味の好みレーダーチャート">'
+    + '<polygon points="'+ring(1)+'" fill="none" stroke="var(--line)" stroke-width="1"/>'
+    + '<polygon points="'+ring(0.66)+'" fill="none" stroke="var(--line)" stroke-width="1"/>'
+    + '<polygon points="'+ring(0.33)+'" fill="none" stroke="var(--line)" stroke-width="1"/>'
+    + '<polygon points="'+dataPts+'" fill="rgba(61,82,150,.28)" stroke="var(--indigo2)" stroke-width="2"/>'
+    + labels + '</svg>';
+}
+
+function bottleCard(r, isBest){
+  var b = r.b, d = diffLabel(b.diff);
+  var html = "";
+  if(isBest){
+    html += '<div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;"><div><div class="small">あなたへの本命</div>'
+      + '<div class="scorebig">' + r.score + '<span style="font-size:22px;">% マッチ</span></div></div></div>';
+  }
+  html += '<h3 style="font-size:' + (isBest?22:17) + 'px;margin:10px 0 2px;">' + b.name + '</h3>'
+    + '<p class="small" style="margin:0 0 6px;">' + b.brewery + '（' + b.pref + '） ・ 価格の目安 ' + yen(b.price) + '（720ml）</p>'
+    + '<p style="margin:0 0 8px;"><span class="tag">' + b.cls + '</span></p>'
+    + '<p style="margin:0 0 8px;"><span class="tag ' + d[1] + '">入手：' + d[0] + '</span></p>';
+  if(b.diff==="veryhard") html += '<p class="small" style="color:var(--warn);">※ この銘柄は人気が非常に高く、定価で買える機会はまれです。酒屋さんの抽選や入荷情報をこまめにチェックしてみてください。下の「次点」や「予算内の代替」は手に入りやすいものを選んでいます。</p>';
+  else if(b.diff==="hard") html += '<p class="small" style="color:var(--warn);">※ 人気が高く、品切れのことも多い銘柄です。見つけたら早めの購入がおすすめです。</p>';
+  if(isBest){
+    html += '<div class="notebox"><b>香り：</b>' + b.aroma + '</div>'
+      + '<div class="notebox"><b>口当たり：</b>' + b.mouth + '</div>'
+      + '<div class="notebox"><b>後味：</b>' + b.finish + '</div>'
+      + '<h3>あなたに合う理由</h3><p style="margin:0;">' + matchReason(b) + '</p>'
+      + '<h3>おすすめの飲み方</h3><p style="margin:0;">' + b.temp + '。グラスは、香りを楽しむならワイングラスのような口の広いもの、食中ならおちょこや平たい盃も合います。</p>'
+      + '<h3>合う料理</h3><p style="margin:0;">' + b.food + '</p>';
+  } else {
+    html += '<p style="margin:0 0 4px;">マッチ度 ' + r.score + '% ・ ' + b.temp + '</p>'
+      + '<p class="small" style="margin:0;">' + b.aroma + '。合う料理：' + b.food + '</p>';
+  }
+  return html;
+}
+function matchReason(b){
+  var reasons = [];
+  var v = userVec;
+  if(b.p[2]>=7 && v[2]>=6) reasons.push("果物のような香りがしっかり感じられて、あなたの「香り重視」の好みにぴったりです");
+  if(b.p[3]>=7 && v[3]>=6) reasons.push("旨みと飲みごたえが厚く、満足感のある一杯になります");
+  if(b.p[5]>=7 && v[5]>=6) reasons.push("後味がすっと消えるので、食事の邪魔をせず次の一口が進みます");
+  if(b.p[0]>=6 && v[0]>=6) reasons.push("ほんのりした甘さが、あなたの好みに合っています");
+  if(b.p[7]>=7 && v[7]>=6) reasons.push("軽やかな飲み口で、飲み疲れしにくいのもポイントです");
+  if(b.p[4]>=7 && v[4]>=6) reasons.push("爽やかな酸があって、後味がリフレッシュされます");
+  if(b.p[8]>=7 && v[8]>=6) reasons.push("お米の風味がしっかり感じられ、日本酒らしさを楽しめます");
+  if(reasons.length===0) reasons.push("香り・旨み・後味のバランスが、あなたの好みの中心に一番近い一本です");
+  return reasons.slice(0,2).join("。") + "。";
+}
+function avoidText(){
+  var last = answers[TOTAL-1];
+  var base = "";
+  if(last && last.tag==="avoid_sweet") base = "甘さが強くて後味にべったり残るタイプ（甘口のにごり酒や、デザートのような甘いお酒）は避けた方が無難です。";
+  else if(last && last.tag==="avoid_aroma") base = "香りが強く出すぎるタイプ（果物の香りが全開の華やかなお酒）は、少し控えめなものから入るのがおすすめです。";
+  else if(last && last.tag==="avoid_heavy") base = "旨みが濃くて重いタイプ（どっしりした純米酒や濃いにごり酒）は、飲み疲れしやすいので避けた方が無難です。";
+  else if(last && last.tag==="avoid_alc") base = "度数が高くてアルコール感が強いタイプ（原酒など）は避けて、まろやかで軽いものからどうぞ。";
+  else base = "あなたの好みからは、極端に甘いものと、極端に重く濃いものは外れやすいです。まずは本命と次点から試してみてください。";
+  if(userVec[5]>=7) base += " また、後味が長く残りすぎるお酒より、キレの良いものの方が満足度が高そうです。";
+  if(userVec[4]<=3) base += " 爽やかな酸が強いお酒は、少し酸っぱく感じやすいかもしれません。";
+  return base;
+}
+
+function finish(){
+  userVec = computeVec();
+  var vec = userVec;
+  document.getElementById("r-typename").textContent = typeName(vec);
+  document.getElementById("r-typedesc").textContent = typeDesc(vec);
+  document.getElementById("r-radar").innerHTML = radarSVG(vec);
+  var bars = "";
+  AXES.forEach(function(name,i){
+    bars += '<div class="bar-row"><span>'+name+'</span><div class="bar"><div style="width:'+(vec[i]*10)+'%"></div></div><span>'+vec[i].toFixed(0)+'</span></div>';
+  });
+  document.getElementById("r-bars").innerHTML = bars;
+
+  var list = ranked(vec);
+  /* スパークリング／にごりを望まない場合は候補から外す（在庫が尽きない範囲で） */
+  var filtered = list.filter(function(r){
+    if(r.b.tags.indexOf("spark")>=0 && !wantsTag("spark")) return false;
+    if(r.b.tags.indexOf("nigori")>=0 && !wantsTag("nigori")) return false;
+    return true;
+  });
+  if(filtered.length >= 8) list = filtered;
+
+  var best = list[0];
+  var runners = list.slice(1,4);
+  /* 冒険枠：本命と系統が違いつつ、マッチ度がそこそこ高いもの */
+  var adventure = null;
+  for(var i=4;i<list.length;i++){
+    var cand = list[i];
+    var diffCount = 0;
+    for(var j=0;j<10;j++){ if(Math.abs(cand.b.p[j]-best.b.p[j])>=4) diffCount++; }
+    if(diffCount>=2 && cand.score>=62){ adventure = cand; break; }
+  }
+  if(!adventure) adventure = list[6] || list[list.length-1];
+  /* 予算内の代替 */
+  var limit = budgetLimit();
+  var budgetPick = null;
+  for(var k=0;k<list.length;k++){
+    if(list[k].b.price <= limit && list[k] !== best){ budgetPick = list[k]; break; }
+  }
+
+  document.getElementById("r-best").innerHTML = bottleCard(best, true);
+
+  var rh = "";
+  runners.forEach(function(r){ rh += '<div class="mini">' + bottleCard(r, false) + '</div>'; });
+  document.getElementById("r-runners").innerHTML = rh;
+
+  document.getElementById("r-adventure").innerHTML =
+    '<h2 style="font-size:18px;">冒険枠</h2><p class="small" style="margin-top:0;">いつもと違う方向だけど、あなたならハマるかもしれない一本。</p>'
+    + bottleCard(adventure, false);
+
+  if(budgetPick){
+    document.getElementById("r-budget").innerHTML =
+      '<h2 style="font-size:18px;">予算内の代替</h2><p class="small" style="margin-top:0;">予算（目安 ' + (limit===Infinity ? "指定なし" : yen(limit) + "まで") + '）に収まる中で、いちばん相性の良い一本。</p>'
+      + bottleCard(budgetPick, false);
+  } else {
+    document.getElementById("r-budget").innerHTML =
+      '<h2 style="font-size:18px;">予算内の代替</h2><p style="margin:0;">本命がすでに予算内に収まっています。価格の目安 ' + yen(best.b.price) + ' で、相性も文句なしです。</p>' + bottleCard(best, false);
+  }
+
+  document.getElementById("r-avoid").textContent = avoidText();
+  show(elResult);
+}
+</script>
+</body>
+</html>
